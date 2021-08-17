@@ -1,3 +1,8 @@
 #!/bin/bash
 
+export TOKEN_SECRET="secretfortoken"
+export DBNAME=offerapp
+export DBUSER=postgres
+export DBPASSWORD=post12345
+
 go run main.go
