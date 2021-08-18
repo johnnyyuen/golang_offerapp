@@ -86,3 +86,29 @@ func (u *User) IsAuthenticated(conn *pgx.Conn) error {
 
 	return nil
 }
+
+func IsTokenValid(tokenString string) (bool, string) {
+	//fmt.Printf("inside IsTokenValid %v\n", tokenString)
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		//fmt.Printf("Parsing: %v \n", token)
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("token signing method is not valid: %v", token.Header["alg"])
+		}
+		return tokenSecret, nil
+	})
+
+	if err != nil {
+		fmt.Printf("Error %v \n", err)
+		return false, ""
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		fmt.Println(claims)
+		userID := claims["user_id"]
+		return true, userID.(string)
+	} else {
+		fmt.Printf("The alg header %v \n", claims["alg"])
+		fmt.Println(err)
+		return false, "uuid.UUID{}"
+	}
+}
