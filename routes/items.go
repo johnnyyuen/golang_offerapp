@@ -48,3 +48,36 @@ func ItemsCreate(c *gin.Context) {
 
 	c.JSON(http.StatusOK, item)
 }
+
+func ItemsUpdate(c *gin.Context) {
+	userID := c.GetString("user_id")
+	db, _ := c.Get("db")
+	conn := db.(pgx.Conn)
+
+	itemSent := models.Item{}
+	err := c.ShouldBindJSON(&itemSent)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid format sent"})
+		return
+	}
+
+	itemBeingUpdate, err := models.FindItemById(itemSent.ID, &conn)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if itemBeingUpdate.SellerID.String() != userID {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "You are not authorized to update this item"})
+		return
+	}
+
+	err = itemSent.Update(&conn)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"item": itemSent})
+}
