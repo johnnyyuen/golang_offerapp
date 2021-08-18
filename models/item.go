@@ -117,3 +117,15 @@ func (i *Item) Update(conn *pgx.Conn) error {
 	}
 	return nil
 }
+
+func (i *Item) DeleteItem(conn *pgx.Conn) error {
+	now := time.Now()
+	_, err := conn.Exec(context.Background(), "DELETE FROM item WHERE id=$1", i.ID)
+
+	if err != nil {
+		fmt.Printf("Error deleting items: (%v)", err)
+		return fmt.Errorf("%v", "Error deleting item")
+	}
+	fmt.Printf("Item %v deleted at %v \n", i.ID, now)
+	return nil
+}

@@ -44,6 +44,7 @@ func main() {
 		itemsGroup.GET("index", routes.ItemsIndex)
 		itemsGroup.GET("sold_by_user", authMiddleWare(), routes.ItemsForSaleByCurrentUser)
 		itemsGroup.PUT("update", authMiddleWare(), routes.ItemsUpdate)
+		itemsGroup.DELETE("delete", authMiddleWare(), routes.ItemsDelete)
 	}
 
 	router.Run(":3000")

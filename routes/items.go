@@ -49,6 +49,36 @@ func ItemsCreate(c *gin.Context) {
 	c.JSON(http.StatusOK, item)
 }
 
+func ItemsDelete(c *gin.Context) {
+	userID := c.GetString("user_id")
+	fmt.Printf("userID::: %v", userID)
+	db, _ := c.Get("db")
+	conn := db.(pgx.Conn)
+
+	itemSent := models.Item{}
+	err := c.ShouldBindJSON(&itemSent)
+
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid format sent"})
+		return
+	}
+
+	itemTobeDeleted, err := models.FindItemById(itemSent.ID, &conn)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = itemTobeDeleted.DeleteItem(&conn)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, "Item Deleted")
+}
+
 func ItemsUpdate(c *gin.Context) {
 	userID := c.GetString("user_id")
 	db, _ := c.Get("db")
