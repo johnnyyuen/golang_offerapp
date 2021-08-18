@@ -29,6 +29,10 @@ func main() {
 
 	router := gin.Default()
 
+	router.Static("/css", "./templates/css")
+
+	router.LoadHTMLGlob("templates/*.html")
+
 	router.Use(dbMiddleware(*conn))
 
 	usersGroup := router.Group("users")

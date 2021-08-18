@@ -17,7 +17,14 @@ func ItemsIndex(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-	c.JSON(http.StatusOK, gin.H{"items": items})
+	//c.JSON(http.StatusOK, gin.H{"items": items})
+
+	data := gin.H{
+		"title": "Item List",
+		"items": items,
+	}
+
+	c.HTML(http.StatusOK, "index.html", data)
 }
 
 func ItemsForSaleByCurrentUser(c *gin.Context) {
