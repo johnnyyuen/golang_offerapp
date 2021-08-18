@@ -42,6 +42,7 @@ func main() {
 		fmt.Println("Items Group involved")
 		itemsGroup.POST("create", authMiddleWare(), routes.ItemsCreate)
 		itemsGroup.GET("index", routes.ItemsIndex)
+		itemsGroup.GET("sold_by_user", authMiddleWare(), routes.ItemsForSaleByCurrentUser)
 	}
 
 	router.Run(":3000")
