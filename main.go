@@ -7,8 +7,9 @@ import (
 	"offerapp/models"
 	"offerapp/routes"
 	"os"
-	"strings"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4"
 	//"golang.org/x/net/context"
@@ -29,6 +30,9 @@ func main() {
 
 	router := gin.Default()
 
+	store := cookie.NewStore([]byte(os.Getenv("TOKEN_SECRET")))
+	router.Use(sessions.Sessions("mysession", store))
+
 	router.Static("/css", "./templates/css")
 
 	router.LoadHTMLGlob("templates/*.html")
@@ -39,6 +43,7 @@ func main() {
 	{
 		usersGroup.POST("register", routes.UsersRegister)
 		usersGroup.POST("login", routes.UsersLogin)
+		usersGroup.POST("logout", routes.Logout)
 	}
 
 	itemsGroup := router.Group("items")
@@ -76,16 +81,18 @@ func dbMiddleware(conn pgx.Conn) gin.HandlerFunc {
 
 func authMiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		bearer := c.Request.Header.Get("Authorization")
+		session := sessions.Default(c)
+		token := fmt.Sprintf("%v", session.Get("Authorization"))
+		//bearer := c.Request.Header.Get("Authorization")
 		//fmt.Printf("Authorization: %v", bearer)
-		split := strings.Split(bearer, "Bearer ")
-		if len(split) < 2 {
+		//split := strings.Split(bearer, "Bearer ")
+		if len(token) < 2 {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Not authenticated."})
 			c.Abort()
 			return
 		}
 		//fmt.Printf("Split 1:%v 2:%v", split[0], split[1])
-		token := split[1]
+		////token := bearer
 		//fmt.Printf("Bearer (%v) \n", token)
 		isValid, userID := models.IsTokenValid(token)
 		if !isValid {

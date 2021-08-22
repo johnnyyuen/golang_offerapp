@@ -28,6 +28,7 @@ type User struct {
 }
 
 func (u *User) Register(conn *pgx.Conn) error {
+	fmt.Println(u.Password)
 	if len(u.Password) < 4 || len(u.PasswordConfirm) < 4 {
 		return fmt.Errorf("%v", "Password must be at least 4 characters long.")
 	}

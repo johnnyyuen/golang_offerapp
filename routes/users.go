@@ -8,7 +8,15 @@ import (
 	"github.com/jackc/pgx/v4"
 
 	"offerapp/models"
+
+	"github.com/gin-contrib/sessions"
 )
+
+func writeToSession(c *gin.Context, t *string) {
+	session := sessions.Default(c)
+	session.Set("Authorization", &t)
+	session.Save()
+}
 
 func UsersLogin(c *gin.Context) {
 	user := models.User{}
@@ -26,6 +34,7 @@ func UsersLogin(c *gin.Context) {
 	}
 	token, err := user.GetAuthToken()
 	if err == nil {
+		writeToSession(c, &token)
 		c.JSON(http.StatusOK, gin.H{
 			"token": token,
 		})
@@ -61,5 +70,14 @@ func UsersRegister(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"user_id": user.ID,
+	})
+}
+
+func Logout(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Clear()
+	session.Save()
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User Sign out successfully",
 	})
 }
