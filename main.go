@@ -43,7 +43,7 @@ func main() {
 	{
 		usersGroup.POST("register", routes.UsersRegister)
 		usersGroup.POST("login", routes.UsersLogin)
-		usersGroup.POST("logout", routes.Logout)
+		usersGroup.POST("logout", authMiddleWare(), routes.Logout)
 	}
 
 	itemsGroup := router.Group("items")
