@@ -25,3 +25,53 @@ Got error about:
 > Error illegal base64 data at input byte 0
 
 Fixed by "Bearer " instead of "Bearer" in AuthMiddleWare function
+
+```
+<script>
+  
+
+async function handleFormSubmit(event) {
+	event.preventDefault();
+
+	const form = event.currentTarget;
+	const url = form.action;
+
+	try {
+		const formData = new FormData(form);
+		const responseData = await postFormDataAsJson({ url, formData });
+
+		console.log({ responseData });
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+async function postFormDataAsJson({url, formData }) {
+  const plainFormData = Object.fromEntries(formData.entries());
+	const formDataJsonString = JSON.stringify(plainFormData);
+
+  const fetchOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: formDataJsonString,
+  };
+  const response = await fetch(url, fetchOptions);
+
+  if (!response.ok) {
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
+  }
+
+return response.json();
+}
+
+
+
+
+  const form = document.getElementById("login-form");
+  form.addEventListener('submit', handleFormSubmit);
+</script>
+```

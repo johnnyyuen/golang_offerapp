@@ -1,0 +1,81 @@
+{{ template "header.html" .}}
+
+<h1>{{ .title}}</h1>
+<main class="form-signin" >
+  <form action="/users/login" method="POST" id="login-form" class="bg-info p-2 text-dark bg-opacity-25">
+    <img class="mb-4" src="/img/teslarobot.png" alt="" width="72" height="57">
+    <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+    <div class="form-floating">
+      <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com">
+      <label for="email">Email address</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+      <label for="password">Password</label>
+    </div>
+
+    <div class="checkbox mb-3">
+      <label>
+        <input type="checkbox" value="remember-me"> Remember me
+      </label>
+    </div>
+    <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+    <p class="mt-5 mb-3 text-muted">&copy; 2017–2021</p>
+  </form>
+</main>
+
+<script>
+async function postFormDataAsJson({ url, formData }) {
+	  const plainFormData = Object.fromEntries(formData.entries());
+	  const formDataJsonString = JSON.stringify(plainFormData);
+
+    const fetchOptions = {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrerPolicy: "no-referrer",
+      body: formDataJsonString,
+    };
+
+	  const response = await fetch(url, fetchOptions);
+    if (!response.ok) {
+      console.log("Login Failed :"+plainFormData);
+      confirm("Login Failed! Username or Password not correct.");
+    } else {
+      window.location.href = "/";
+    }
+
+	return response.json();
+}
+
+/**
+ * Event handler for a form submit event.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/submit_event
+ *
+ * @param {SubmitEvent} event
+ */
+async function handleFormSubmit(event) {
+	event.preventDefault();
+
+	const form = event.currentTarget;
+	const url = form.action;
+
+	try {
+		const formData = new FormData(form);
+		const responseData = await postFormDataAsJson({ url, formData });
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+const exampleForm = document.getElementById("login-form");
+exampleForm.addEventListener("submit", handleFormSubmit);
+</script>
+
+
+{{ template "footer.html" .}}

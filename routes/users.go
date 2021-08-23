@@ -19,25 +19,29 @@ func writeToSession(c *gin.Context, t *string) {
 }
 
 func UsersLogin(c *gin.Context) {
+	//fmt.Printf("hello user login here")
 	user := models.User{}
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error1": err.Error()})
+		c.Redirect(http.StatusMovedPermanently, "/app/login")
 		return
 	}
 	db, _ := c.Get("db")
 	conn := db.(pgx.Conn)
 	err = user.IsAuthenticated(&conn)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error2": err.Error()})
+		c.Redirect(http.StatusMovedPermanently, "/app/login")
 		return
 	}
 	token, err := user.GetAuthToken()
 	if err == nil {
 		writeToSession(c, &token)
-		c.JSON(http.StatusOK, gin.H{
-			"token": token,
-		})
+		//c.JSON(http.StatusOK, gin.H{
+		//	"token": token,
+		//})
+		c.Redirect(http.StatusMovedPermanently, "/")
 		return
 	}
 

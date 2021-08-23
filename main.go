@@ -37,7 +37,17 @@ func main() {
 
 	router.LoadHTMLGlob("templates/*.html")
 
+	router.Static("/img", "./img")
+
 	router.Use(dbMiddleware(*conn))
+
+	router.GET("/", routes.IndexPage)
+
+	appGroup := router.Group("app")
+	{
+		appGroup.GET("/login", routes.AppUserLogin)
+		appGroup.POST("/login", routes.AppConvertLogin)
+	}
 
 	usersGroup := router.Group("users")
 	{
