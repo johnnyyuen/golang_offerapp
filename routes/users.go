@@ -12,9 +12,9 @@ import (
 	"github.com/gin-contrib/sessions"
 )
 
-func writeToSession(c *gin.Context, t *string) {
+func writeToSession(c *gin.Context, s string, t *string) {
 	session := sessions.Default(c)
-	session.Set("Authorization", &t)
+	session.Set(s, &t)
 	session.Save()
 }
 
@@ -23,21 +23,25 @@ func UsersLogin(c *gin.Context) {
 	user := models.User{}
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
+		fmt.Printf("jason format error :%v", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error1": err.Error()})
-		c.Redirect(http.StatusMovedPermanently, "/app/login")
+		//c.Redirect(http.StatusMovedPermanently, "/app/login")
 		return
 	}
 	db, _ := c.Get("db")
 	conn := db.(pgx.Conn)
 	err = user.IsAuthenticated(&conn)
 	if err != nil {
+		fmt.Printf("%v", "authentication error")
 		c.JSON(http.StatusBadRequest, gin.H{"error2": err.Error()})
-		c.Redirect(http.StatusMovedPermanently, "/app/login")
+		//c.Redirect(http.StatusMovedPermanently, "/app/login")
 		return
 	}
 	token, err := user.GetAuthToken()
 	if err == nil {
-		writeToSession(c, &token)
+		writeToSession(c, "Authorization", &token)
+		writeToSession(c, "UserEmail", &user.Email)
+		fmt.Println("wrote token to session")
 		//c.JSON(http.StatusOK, gin.H{
 		//	"token": token,
 		//})

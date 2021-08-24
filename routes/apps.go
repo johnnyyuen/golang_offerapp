@@ -6,13 +6,17 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 func IndexPage(c *gin.Context) {
-
+	session := sessions.Default(c)
+	userEmail := fmt.Sprintf("%v", session.Get("UserEmail"))
 	data := gin.H{
-		"title": "Hello!",
+		"title":     "Hello!",
+		"customCSS": "index.css",
+		"useremail": userEmail,
 	}
 
 	c.HTML(http.StatusOK, "index.html", data)
@@ -24,7 +28,8 @@ func AppUserLogin(c *gin.Context) {
 		if already login, redirect to all item list
 	*/
 	data := gin.H{
-		"title": "Please Login",
+		"title":     "Please Login",
+		"customCSS": "signin.css",
 	}
 
 	c.HTML(http.StatusOK, "login.html", data)

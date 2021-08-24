@@ -1,8 +1,9 @@
 {{ template "header.html" .}}
 
-<h1>{{ .title}}</h1>
 <main class="form-signin" >
-  <form action="/users/login" method="POST" id="login-form" class="bg-info p-2 text-dark bg-opacity-25">
+
+  <h1>{{ .title}}</h1>
+  <form action="/users/login" method="POST" id="login-form">
     <img class="mb-4" src="/img/teslarobot.png" alt="" width="72" height="57">
     <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 

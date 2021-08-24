@@ -1,7 +1,7 @@
 {{ template "header.html" .}}
 {{ template "topmenuBar.html" .}}
 
-<h1>{{ .title}}</h1>
+<h1>{{ .title}} {{ .useremail}}</h1>
 {{ range .items}}
 <a href="#" class="list-group-item list-group-item-action py-3 lh-tight">
     <div class="d-flex w-100 align-items-center justify-content-between">

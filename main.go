@@ -41,7 +41,7 @@ func main() {
 
 	router.Use(dbMiddleware(*conn))
 
-	router.GET("/", routes.IndexPage)
+	router.GET("/", authMiddleWare(), routes.IndexPage)
 
 	appGroup := router.Group("app")
 	{
@@ -53,7 +53,7 @@ func main() {
 	{
 		usersGroup.POST("register", routes.UsersRegister)
 		usersGroup.POST("login", routes.UsersLogin)
-		usersGroup.POST("logout", authMiddleWare(), routes.Logout)
+		usersGroup.GET("logout", authMiddleWare(), routes.Logout)
 	}
 
 	itemsGroup := router.Group("items")
